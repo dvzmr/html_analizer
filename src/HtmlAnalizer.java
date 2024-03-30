@@ -10,12 +10,26 @@ public class HtmlAnalizer {
     public static void main(String[] args) {
         try {
             String uri = null;
+            String finalContent = null;
             if (args.length > 0) {
                 uri = args[0];
             }
-            var finalContent = parseHtml(uri);
-            System.out.println(findContentOfDeepestTag(finalContent).trim());
-
+            if (uri.startsWith("http://") || uri.startsWith("https://")) {
+                finalContent = parseHtml(uri);
+                System.out.println(findContentOfDeepestTag(finalContent).trim());
+            } else {
+                uri = "https://" + args[0];
+                if (isValidURI(uri)) {
+                    finalContent = parseHtml(uri);
+                    System.out.println(findContentOfDeepestTag(finalContent).trim());
+                } else {
+                    uri = "http://" + args[0];
+                    if (isValidURI(uri)) {
+                        finalContent = parseHtml(uri);
+                        System.out.println(findContentOfDeepestTag(finalContent).trim());
+                    }
+                }
+            }
         } catch (IOException e) {
             System.out.println("URL connection error");
         }
@@ -88,4 +102,15 @@ public class HtmlAnalizer {
         }
         return deepestContent;
     }
+
+    public static boolean isValidURI(String url) {
+        try {
+            new java.net.URL(url).toURI();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
+
